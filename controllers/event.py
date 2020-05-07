@@ -14,10 +14,12 @@ def add_new_event():
         if field not in new_event_data:
             return f"Missing field {field} in Request body", 400
     try:
-        new_event = Event(name=new_event_data.get("name"),
-                          paid_by=new_event_data.get("paidBy"),
-                          amount=new_event_data.get("amount"),
-                          users=new_event_data.get("users"))
+        new_event = Event(
+            name=new_event_data.get("name"),
+            paid_by=new_event_data.get("paidBy"),
+            amount=new_event_data.get("amount"),
+            users=new_event_data.get("users"),
+        )
         return event_service.new_event(new_event)
 
     except EventExists:
@@ -25,7 +27,3 @@ def add_new_event():
 
     except Exception as e:
         return str(e), 500
-
-
-
-

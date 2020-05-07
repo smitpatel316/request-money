@@ -1,15 +1,21 @@
-import requests
-import secrets
-import hashlib
 import base64
+import hashlib
+import secrets
 
-ENDPOINT_ADDRESS = "https://gateway-web.beta.interac.ca/publicapi/api/v1"
+import requests
+
+from models.Contact import Contact
+
+ENDPOINT_ADDRESS_V1 = "https://gateway-web.beta.interac.ca/publicapi/api/v1"
+ENDPOINT_ADDRESS_V2 = "https://gateway-web.beta.interac.ca/publicapi/api/v2"
 ACCESS_TOKEN_ENDPOINT = "/access-tokens"
+CONTACT_ENDPOINT = "/contacts"
+REQUEST_MONEY_ENDPOINT = "/money-requests/send"
 
 
 class User:
     def __init__(
-        self, name, email, third_party_access_id, registration_id=None, secret_key=None
+            self, name, email, third_party_access_id, registration_id=None, secret_key=None
     ):
         self.name = name
         self.email = email
@@ -23,16 +29,15 @@ class User:
             self.generate_encrypted_key()
             self.generate_access_token()
 
-        self.contacts = []
+        self.contacts: [Contact] = []
 
     def set_secret_key(self, secret_key):
         self.secret_key = secret_key
         self.generate_encrypted_key()
         self.generate_access_token()
 
-    def add_new_contact(self, contact):
-        if contact not in self.contacts:
-            self.contacts.append(contact)
+    def set_registration_id(self, registration_id):
+        self.registration_id = registration_id
 
     def generate_encrypted_key(self):
         if self.secret_key is None:
@@ -52,8 +57,21 @@ class User:
             "secretKey": self.encrypted_key,
         }
         res = requests.get(
-            url=f"{ENDPOINT_ADDRESS}{ACCESS_TOKEN_ENDPOINT}", headers=headers
+            url=f"{ENDPOINT_ADDRESS_V1}{ACCESS_TOKEN_ENDPOINT}", headers=headers
         )
         if res.status_code not in [200, 201]:
             res.raise_for_status()
         self.access_token = res.json().get("access_token")
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "email": self.email,
+            "third_party_access_id": self.third_party_access_id,
+            "registration_id": self.registration_id,
+            "secret_key": self.secret_key,
+            "encrypted_key": self.encrypted_key,
+            "access_token": self.access_token,
+            "salt": self.salt,
+            "contacts": [contact.__dict__ for contact in self.contacts],
+        }

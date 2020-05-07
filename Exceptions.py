@@ -7,3 +7,7 @@ class UserExists(PyMongoError):
 
 class EventExists(PyMongoError):
     pass
+
+
+class UserNotFound(PyMongoError):
+    pass
