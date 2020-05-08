@@ -58,3 +58,25 @@ def new_contact():
 
     except Exception as e:
         return str(e), 500
+
+
+@user.route("/contacts/<uid>")
+def get_all_contacts(uid):
+    return user_service.get_all_contacts(uid)
+
+
+@user.route("/request-money", methods=["POST"])
+def bulk_money_request():
+    body = request.json
+    for field in ["uid", "contacts"]:
+        if field not in body:
+            return f"Field {field} missing from body", 400
+    return {"message": user_service.bulk_money_request(body.get("uid"), body.get("contacts"))}
+
+
+@user.route("/test")
+def test():
+    return user_service.send_money_request(user_service.find_user("5eb45480a6f04c792cb73bdd"),
+                                           contact_id="CAFmzkZfxEF4",
+                                           contact_hash="058daae2fad4531b228a5f542da091a5",
+                                           amount=47)

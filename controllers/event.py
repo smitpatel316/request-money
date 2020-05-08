@@ -3,8 +3,14 @@ from flask import Blueprint, request
 from Exceptions import EventExists
 from models.Event import Event
 from services import event as event_service
+from bson.json_util import dumps
 
 event = Blueprint(name="event", import_name=__name__, url_prefix="/api/v1/event")
+
+
+@event.route("/<uid>")
+def all_events(uid):
+    return dumps(event_service.all_events(uid))
 
 
 @event.route("/add", methods=["POST"])
@@ -27,3 +33,8 @@ def add_new_event():
 
     except Exception as e:
         return str(e), 500
+
+
+@event.route("/owe/<uid>")
+def contact_owe(uid):
+    return dumps(event_service.contact_owe(uid))

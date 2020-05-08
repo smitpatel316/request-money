@@ -6,6 +6,15 @@ from controllers.user import user
 app = Flask(__name__)
 
 
+@app.after_request
+def after_request(response):
+    header = response.headers
+    header["Access-Control-Allow-Origin"] = "*"
+    header["Access-Control-Allow-Headers"] = "*"
+    header["Access-Control-Allow-Methods"] = "*"
+    return response
+
+
 @app.route("/")
 def index():
     return "Service is running!"
