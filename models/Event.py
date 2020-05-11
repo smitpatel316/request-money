@@ -4,3 +4,4 @@ class Event:
         self.users = users
         self.paid_by = paid_by
         self.amount = amount
+        self.number_of_users = len(users) + 1

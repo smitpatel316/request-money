@@ -1,9 +1,9 @@
+from bson.json_util import dumps
 from flask import Blueprint, request
 
 from Exceptions import EventExists
 from models.Event import Event
 from services import event as event_service
-from bson.json_util import dumps
 
 event = Blueprint(name="event", import_name=__name__, url_prefix="/api/v1/event")
 
@@ -13,7 +13,7 @@ def all_events(uid):
     return dumps(event_service.all_events(uid))
 
 
-@event.route("/add", methods=["POST"])
+@event.route("/", methods=["POST"])
 def add_new_event():
     new_event_data = request.json
     for field in ["name", "paidBy", "amount", "users"]:

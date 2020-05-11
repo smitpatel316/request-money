@@ -40,6 +40,7 @@ def add_user():
 @user.route("/contact", methods=["POST"])
 def new_contact():
     new_contact_data: dict = request.json
+    print(new_contact_data)
     for field in ["name", "handleType", "handle", "uid"]:
         if field not in new_contact_data:
             return f"Missing field {field} in Request body", 400
@@ -74,9 +75,7 @@ def bulk_money_request():
     return {"message": user_service.bulk_money_request(body.get("uid"), body.get("contacts"))}
 
 
-@user.route("/test")
-def test():
-    return user_service.send_money_request(user_service.find_user("5eb45480a6f04c792cb73bdd"),
-                                           contact_id="CAFmzkZfxEF4",
-                                           contact_hash="058daae2fad4531b228a5f542da091a5",
-                                           amount=47)
+@user.route("/<uid>/<contact_hash>/payout", methods=["DELETE"])
+def payout(uid, contact_hash):
+    user_service.payout(uid, contact_hash)
+    return {"message": "Account Balanced!"}

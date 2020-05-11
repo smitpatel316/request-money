@@ -8,7 +8,7 @@ from Exceptions import UserExists, UserNotFound
 from models.Contact import Contact
 from models.User import User
 from services import db
-from services.event import contact_owe
+from services import event as event_service
 
 users = db.get_collection(name="users")
 ENDPOINT_ADDRESS_V2 = "https://gateway-web.beta.interac.ca/publicapi/api/v2"
@@ -67,7 +67,7 @@ def add_new_contact(user, contact: Contact):
     users.find_one_and_update(
         {"_id": ObjectId(user.get("_id"))}, {"$set": {"contacts": user.get("contacts")}}
     )
-    return "Added new contact!"
+    return {"message": "Added new contact!"}
 
 
 def get_all_contacts(uid):
@@ -111,3 +111,10 @@ def send_money_request(user, contact_id, contact_hash, amount):
     res = requests.post(url=f"{ENDPOINT_ADDRESS_V2}{REQUEST_MONEY_ENDPOINT}", headers=headers, json=body)
     res.raise_for_status()
     return "Money Request Sent"
+
+
+def payout(uid, contact):
+    user = find_user(uid)
+    # for event in event_service.get_events_for_contact(contact):
+    #     print(event)
+    event_service.remove_user(contact)
